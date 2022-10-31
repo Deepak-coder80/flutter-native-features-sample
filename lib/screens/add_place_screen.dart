@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/image_input.dart';
-
+import 'dart:io';
+import 'package:provider/provider.dart';
+import '../providers/great_places.dart';
 class AddPlaceScreen extends StatefulWidget {
   const AddPlaceScreen({super.key});
 
@@ -12,6 +14,35 @@ class AddPlaceScreen extends StatefulWidget {
 
 class _AddPlaceScreenState extends State<AddPlaceScreen> {
   TextEditingController _titleController = TextEditingController();
+  File? _pickedImage;
+
+  void _selectImage(File pickedImage){
+    _pickedImage=pickedImage;
+  }
+
+  void _savePlace(){
+    if(_titleController.text.isEmpty||_pickedImage==null){
+       showDialog<String>(
+        context: context,
+        builder: ((context) => 
+         AlertDialog(
+          title:  const Text('title or image can\'t be null'),
+          content:const  Text('please enter title and image'),
+          actions: [
+            TextButton(onPressed: (){
+              Navigator.pop(context,'OK');
+            }, child: const Text('OK'),)
+          ],
+        )
+        ),
+      );
+      return;
+    }
+    Provider.of<GratePlace>(context,listen: false)
+          .addPlace(_titleController.text, _pickedImage!);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +65,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const ImageInput(),
+                     ImageInput(onSelectImage: _selectImage,),
                   ],
                 ),
               ),
@@ -46,7 +77,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Colors.black),
-            onPressed: () {},
+            onPressed: _savePlace,
             icon: const Icon(Icons.add),
             label: const Text('Add place'),
           )
