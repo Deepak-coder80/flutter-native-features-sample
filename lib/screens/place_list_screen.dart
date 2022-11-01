@@ -20,22 +20,36 @@ class PlaceListScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Consumer<GratePlace>(
-        child: const Center(
-          child: Text('Got no places yet'),
-        ),
-        builder: (context, gratePlaces, child) => 
-                // ignore: prefer_is_empty
-                gratePlaces.items.length<=0?const Center(
-          child: Text('Got no places yet'),
-        ):ListView.builder(
-          itemCount: gratePlaces.items.length,
-          itemBuilder:(context, index) =>  ListTile(
-            leading: CircleAvatar(backgroundImage: FileImage(gratePlaces.items[index].image),),
-            title: Text(gratePlaces.items[index].title),
-            onTap: (){},
-          ),
-        ),
+      body: FutureBuilder(
+        future:
+            Provider.of<GratePlace>(context, listen: false).fetchAndSetPlaces(),
+        builder: (context, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Consumer<GratePlace>(
+                child: const Center(
+                  child: Text('Got no places yet'),
+                ),
+                builder: (context, gratePlaces, child) =>
+                    // ignore: prefer_is_empty
+                    gratePlaces.items.length <= 0
+                        ? const Center(
+                            child: Text('Got no places yet'),
+                          )
+                        : ListView.builder(
+                            itemCount: gratePlaces.items.length,
+                            itemBuilder: (context, index) => ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    FileImage(gratePlaces.items[index].image),
+                              ),
+                              title: Text(gratePlaces.items[index].title),
+                              onTap: () {},
+                            ),
+                          ),
+              ),
       ),
     );
   }

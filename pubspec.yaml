@@ -40,6 +40,7 @@ dependencies:
   image_picker: 
   path_provider:
   path:
+  sqflite:
 
 dev_dependencies:
   flutter_test:
